@@ -87,8 +87,8 @@ df_torneos2 <- df_torneos2 %>%
 df_torneos2 <- df_torneos2 %>% 
     mutate(pts_nuevo = ifelse((year >= 1995),pts,((pg*3)+pe)),
            porc = ifelse((year > 1994), 100*(pts/(pj*3)),100*(pts/(pj*2))),
-           year = factor(year,levels = c(1966:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018')),
-           camp = case_when((year %in% c(1966:1967,1971:1983,1985:2001,2010,2013,2017,2018))& (pos == 1)~'C',
+           year = factor(year,levels = c(1960:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018')),
+           camp = case_when((year %in% c(1960:1967,1971:1983,1985:2001,2010,2013,2017,2018))& (pos == 1)~'C',
                             (year == 1968) & (equipo == 'Santiago Wanderers')~'C',
                             (year == 1969) & (equipo == 'Universidad de Chile')~'C',
                             (year == 1970) & (equipo == 'Colo-Colo')~'C',
@@ -120,7 +120,7 @@ df_torneos2 <- df_torneos2 %>%
                             TRUE ~ ''))
 
 # Inicio shiny
-ui <- navbarPage("Fútbol chileno. 1966-2018.",
+ui <- navbarPage("Fútbol chileno. 1962-2018.",
                  theme = shinythemes::shinytheme('cyborg'),
 
     # Pestaña 1
@@ -130,8 +130,8 @@ ui <- navbarPage("Fútbol chileno. 1966-2018.",
         sidebarPanel(
             selectInput("year",
                         "Escoja un año",
-                        choices = c(1966:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018'),
-                        selected = "1966"),
+                        choices = c(1960:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018'),
+                        selected = "1960"),
             width = 2
         ),
 
@@ -157,12 +157,16 @@ ui <- navbarPage("Fútbol chileno. 1966-2018.",
                                        "Universidad Católica", "Universidad de Chile","Universidad de Concepción", "Unión Española",
                                        "Unión La Calera","Unión San Felipe"),
                            selected = "Audax Italiano"),
+        selectInput("dec",
+                    "Escoja década:",
+                    choices = c("1960-69","1970-79","1980-89","1990-99","2000-09","2010-18"),
+                    selected = "1960-69"),
         width = 2
     ),
     
     # Gráfico escogido
     mainPanel(
-        h2("Gráfico de rendimientos y posiciones del periodo"),
+        h2("Gráfico de rendimientos y posiciones del lapso escogido"),
         plotOutput("graf_eq")
     )))
 
@@ -172,14 +176,14 @@ server <- function(input, output) {
     output$tabla_decada <- renderTable({
         df_torneos2 %>% 
             group_by(equipo) %>% 
-            mutate(pts_total = sum(pts_nuevo),
-                   pj_total = sum(pj),
-                   pg_total = sum(pg),
-                   pe_total = sum(pe),
-                   pp_total = sum(pp),
-                   gf_total = sum(gf),
-                   gc_total = sum(gc),
-                   dif_total = gf_total-gc_total,
+            mutate(pts_total = as.integer(sum(pts_nuevo)),
+                   pj_total = as.integer(sum(pj)),
+                   pg_total = as.integer(sum(pg)),
+                   pe_total = as.integer(sum(pe)),
+                   pp_total = as.integer(sum(pp)),
+                   gf_total = as.integer(sum(gf)),
+                   gc_total = as.integer(sum(gc)),
+                   dif_total = as.integer(gf_total-gc_total),
                    porc = 100*(pts_total/(pj_total*3))) %>% 
             add_id() %>% 
             filter(ID == 1) %>% 
@@ -192,7 +196,6 @@ server <- function(input, output) {
         
 
     },
-    digits = 0,
     caption = "Esta tabla considera bonificaciones según rendimiento en copas nacionales y descuentos por sanciones.")
     
     output$tabla_year <- renderTable({
@@ -201,11 +204,21 @@ server <- function(input, output) {
             select(-pts_nuevo,-year)
     },
     digits = 0,
-    caption = "Desde 1995, se computan 3 pts. al ganador.<br> Para 1997 y desde 2002 hasta 2013, se consideran las tablas anuales.<br> Desde la temporada 2013-14 hasta la 2016-17, se consideran tablas de la temporada. <br> Tablas consideran eventuales bonificaciones y sanciones.")
+    caption = "Desde 1995, se computan 3 pts. al ganador.<br> No se consideran torneos metropolitanos y regionales, pero sí eventuales desempates.
+    <br> Para 1997 y desde 2002 hasta 2013, se consideran las tablas anuales.<br> Desde la temporada 2013-14 hasta la 2016-17, se consideran tablas de la temporada. <br> Tablas consideran eventuales bonificaciones y sanciones.")
         
+    
    output$graf_eq <- renderPlot({
        df_torneos2 %>% 
-           filter(equipo == input$equipo) %>% 
+           mutate(decada = case_when((input$dec == "1960-69")~c(1960:1969),
+                                     (input$dec == "1970-79")~c(1970:1979),
+                                     (input$dec == "1980-89")~c(1980:1989),
+                                     (input$dec == "1990-99")~c(1990:1999),
+                                     (input$dec == "2000-09")~c(2000:2009),
+                                     (input$dec == "2010-18")~c(2010:2019),
+                                     TRUE ~ NA_real_)) %>% 
+           filter(equipo == input$equipo) %>%
+           filter(year %in% decada) %>% 
            ggplot(aes(x=year,y=porc))+
            geom_point(aes(color = equipo))+
            geom_text(aes(label = pos),size=3,nudge_y = 1)+
