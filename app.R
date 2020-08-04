@@ -87,8 +87,9 @@ df_torneos2 <- df_torneos2 %>%
 df_torneos2 <- df_torneos2 %>% 
     mutate(pts_nuevo = ifelse((year >= 1995),pts,((pg*3)+pe)),
            porc = ifelse((year > 1994), 100*(pts/(pj*3)),100*(pts/(pj*2))),
-           year = factor(year,levels = c(1969:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018')),
-           camp = case_when((year %in% c(1971:1983,1985:2001,2010,2013,2017,2018))& (pos == 1)~'C',
+           year = factor(year,levels = c(1966:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018')),
+           camp = case_when((year %in% c(1966:1967,1971:1983,1985:2001,2010,2013,2017,2018))& (pos == 1)~'C',
+                            (year == 1968) & (equipo == 'Santiago Wanderers')~'C',
                             (year == 1969) & (equipo == 'Universidad de Chile')~'C',
                             (year == 1970) & (equipo == 'Colo-Colo')~'C',
                             (year == 1984) & (equipo == 'Universidad Católica')~'C',
@@ -119,7 +120,7 @@ df_torneos2 <- df_torneos2 %>%
                             TRUE ~ ''))
 
 # Inicio shiny
-ui <- navbarPage("Fútbol chileno. 1969-2018.",
+ui <- navbarPage("Fútbol chileno. 1966-2018.",
                  theme = shinythemes::shinytheme('cyborg'),
 
     # Pestaña 1
@@ -129,8 +130,8 @@ ui <- navbarPage("Fútbol chileno. 1969-2018.",
         sidebarPanel(
             selectInput("year",
                         "Escoja un año",
-                        choices = c(1969:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018'),
-                        selected = "1969"),
+                        choices = c(1966:2013,'2013-14','2014-15','2015-16','2016-17','2017','2018'),
+                        selected = "1966"),
             width = 2
         ),
 
@@ -150,7 +151,7 @@ ui <- navbarPage("Fútbol chileno. 1969-2018.",
                            choices = c("Audax Italiano", "Barnechea", "Cobreloa", "Cobresal", "Colo-Colo", "Coquimbo Unido", 
                                        "Curicó Unido","Deportes Antofagasta", "Deportes Arica","Deportes Concepción", "Deportes Aviación","Deportes Iquique", "Deportes La Serena", 
                                        "Deportes Melipilla", "Deportes Ovalle", "Deportes Puerto Montt", "Deportes Temuco", "Deportes Valdivia","Everton", 
-                                       "Fernández Vial", "Huachipato", "Lota Schwager","Magallanes",
+                                       "Fernández Vial", "Ferrobádminton","Huachipato", "Lota Schwager","Magallanes",
                                        "Naval", "Ñublense","O'Higgins", "Palestino", "Provincial Osorno", "Rangers",
                                        "Regional Atacama", "San Luis","Santiago Morning", "Santiago Wanderers","Trasandino", 
                                        "Universidad Católica", "Universidad de Chile","Universidad de Concepción", "Unión Española",
@@ -212,7 +213,7 @@ server <- function(input, output) {
                                          "purple", "light blue", "red", "blue", "green", "green", "blue", "yellow", 
                                          "dark blue", "dark blue", "light blue", "black", "black", "red", "red", "black", 
                                          "green", "light blue", "blue", "red","red","yellow","black","red","yellow","red",
-                                         "black","light blue","white","red","light blue","green","light blue","green"), 
+                                         "black","light blue","white","red","light blue","green","light blue","green","yellow"), 
                               breaks = c("Audax Italiano", "Cobreloa", "Cobresal", "Colo-Colo", "Coquimbo Unido", 
                                          "Deportes Antofagasta", "Deportes Concepción", "Deportes Iquique", 
                                          "Deportes La Serena", "Deportes Melipilla", "Deportes Puerto Montt", 
@@ -222,7 +223,8 @@ server <- function(input, output) {
                                          "Universidad de Chile", "Unión Española","Unión San Felipe",
                                          "Universidad de Concepción","Lota Schwager","Ñublense","San Luis",
                                          "Unión La Calera","Curicó Unido","Deportes Arica","Barnechea",
-                                         "Deportes Valdivia","Magallanes","Trasandino","Deportes Aviación","Deportes Ovalle"))+
+                                         "Deportes Valdivia","Magallanes","Trasandino","Deportes Aviación","Deportes Ovalle",
+                                         "Ferrobádminton"))+
            theme_dark()+
            theme(legend.position = 'none')+
            labs(x="Año",
