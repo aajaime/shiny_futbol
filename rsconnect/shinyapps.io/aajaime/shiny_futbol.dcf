@@ -1,0 +1,12 @@
+name: shiny_futbol
+title: shiny_futbol
+username:
+account: aajaime
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2554041
+bundleId: 3470119
+url: https://aajaime.shinyapps.io/shiny_futbol/
+when: 1596475764.28744
+asMultiple: FALSE
+asStatic: FALSE
