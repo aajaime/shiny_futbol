@@ -14,7 +14,18 @@ library(plotly)
 library(ggplot2)
 
 # Lectura de base
-df_torneos <- readxl::read_xlsx('base_torneos.xlsx') %>% 
+df_torneos <- readxl::read_xlsx('base_torneos.xlsx',
+                                col_types = c('numeric',
+                                              'text',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'numeric',
+                                              'text'))%>% 
     janitor::clean_names()
 
 # Limpieza torneo 1999
